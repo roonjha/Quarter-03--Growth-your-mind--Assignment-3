@@ -1,31 +1,40 @@
 import streamlit as st
 import re
 
-#password ka function banana he.
-
-def apna_password(password):
-    print("Type your password")
-
-
-#input ka variables:
-password = input("Enter your password.")
-apna_password(password)
-
-#conditions k liye
-
-if len(password) < 8:
-    print("Week Password, Minimum 8 charactors required!")
+# Password checking function
+def check_password_strength(password):
+    messages = []  # To collect messages
     
-else:
-    upper = re.search(r"[A-Z]", password)
-    lower = re.search(r"[a-z]", password)
-    special_case = re.search(r"[!@#$%^&*+=]", password)
-    digit = re.search(r"[0-9]", password)
+    if len(password) < 8:
+        messages.append("❌ Weak Password! Minimum 8 characters required!")
+    else:
+        upper = re.search(r"[A-Z]", password)
+        lower = re.search(r"[a-z]", password)
+        special_case = re.search(r"[!@#$%^&*+=]", password)
+        digit = re.search(r"[0-9]", password)
 
-if  not upper or not lower or not digit:
-    print("Wrong Password, You password must contains atleast")
-    print(" -1 Upper Case letter (A-Z)")
-    print(" -1 Lower Case letter (a-z)")
-    print(" -1 Special Case letters (A-Z)")
+        # Collect issues if missing
+        if not upper:
+            messages.append(" Add at least 1 Uppercase letter (A-Z)")
+        if not lower:
+            messages.append(" Add at least 1 Lowercase letter (a-z)")
+        if not digit:
+            messages.append(" Add at least 1 Digit (0-9)")
+        if not special_case:
+            messages.append(" Add at least 1 Special Character (!@#$%^&*+=)")
 
-apna_password(password)
+        # If no issues, it's a strong password
+        if upper and lower and digit and special_case:
+            messages.append("✅🔒 Strong Password! Well done!")
+
+    return messages
+
+# Streamlit GUI
+st.title(" Password Strength Meter")
+
+password = st.text_input("Enter your password:")
+
+if password:  # If user entered something
+    result = check_password_strength(password)
+    for msg in result:
+        st.write(msg)
